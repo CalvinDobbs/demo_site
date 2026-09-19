@@ -1,7 +1,12 @@
 "use client";
 
 import { createContext, useEffect, useMemo, useReducer, type ReactNode } from "react";
-import { readStoredCart, writeStoredCart, type StoredCartItem } from "@/lib/storage";
+import {
+  clearStoredState,
+  readStoredCart,
+  writeStoredCart,
+  type StoredCartItem,
+} from "@/lib/storage";
 
 export const MAX_QUANTITY = 10;
 
@@ -67,12 +72,26 @@ function cartReducer(state: CartState, action: CartAction): CartState {
   }
 }
 
+/**
+ * `?reset=1` on any page wipes the cart (and anything else in session storage)
+ * before it is loaded, then drops the parameter so a reload keeps the new cart.
+ */
+function consumeResetParam() {
+  const url = new URL(window.location.href);
+  if (url.searchParams.get("reset") !== "1") return;
+
+  clearStoredState();
+  url.searchParams.delete("reset");
+  window.history.replaceState(window.history.state, "", url.pathname + url.search + url.hash);
+}
+
 export const CartContext = createContext<CartContextValue | null>(null);
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(cartReducer, { items: [], ready: false });
 
   useEffect(() => {
+    consumeResetParam();
     dispatch({ type: "hydrate", items: readStoredCart() });
   }, []);
 

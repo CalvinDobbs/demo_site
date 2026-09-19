@@ -1,5 +1,5 @@
 // Thin wrappers around sessionStorage. Everything Meridian stores lives under
-// the "meridian:" prefix.
+// the "meridian:" prefix so a reset can clear it in one pass.
 
 const PREFIX = "meridian:";
 const CART_KEY = `${PREFIX}cart`;
@@ -67,4 +67,18 @@ export function saveOrder(order: StoredOrder) {
 /** Raw JSON for an order, so callers can use it as a stable snapshot. */
 export function readOrderJson(id: string): string | null {
   return read(orderKey(id));
+}
+
+/** Removes everything Meridian has put in sessionStorage. */
+export function clearStoredState() {
+  try {
+    const keys: string[] = [];
+    for (let i = 0; i < window.sessionStorage.length; i++) {
+      const key = window.sessionStorage.key(i);
+      if (key?.startsWith(PREFIX)) keys.push(key);
+    }
+    keys.forEach((key) => window.sessionStorage.removeItem(key));
+  } catch {
+    // Nothing to clear if storage is unavailable.
+  }
 }
