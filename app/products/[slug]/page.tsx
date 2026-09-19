@@ -11,6 +11,23 @@ type ProductPageProps = {
   params: Promise<{ slug: string }>;
 };
 
+const BADGES = ["Made by hand", "Ships in 2 days", "Free 30-day returns"];
+
+function ProductBadges() {
+  return (
+    <ul aria-label="Why buy from us" className="flex shrink-0 gap-2">
+      {BADGES.map((badge) => (
+        <li
+          key={badge}
+          className="whitespace-nowrap rounded-full border border-line px-3 py-1.5 text-xs text-muted"
+        >
+          {badge}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export const dynamicParams = false;
 
 export function generateStaticParams() {
@@ -68,7 +85,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
           />
           <p className="mt-8 text-base leading-relaxed text-muted">{product.description}</p>
 
-          <div className="mt-10">
+          <div className="mt-10 flex items-start gap-6">
+            <ProductBadges />
             <AddToCart slug={product.slug} name={product.name} />
           </div>
 
