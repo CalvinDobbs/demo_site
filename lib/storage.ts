@@ -3,10 +3,23 @@
 
 const PREFIX = "meridian:";
 const CART_KEY = `${PREFIX}cart`;
+const orderKey = (id: string) => `${PREFIX}order:${id}`;
 
 export type StoredCartItem = {
   slug: string;
   quantity: number;
+};
+
+export type StoredOrder = {
+  id: string;
+  lines: {
+    slug: string;
+    name: string;
+    image: string;
+    quantity: number;
+    lineTotal: number;
+  }[];
+  total: number;
 };
 
 function read(key: string): string | null {
@@ -45,4 +58,13 @@ export function readStoredCart(): StoredCartItem[] {
 
 export function writeStoredCart(items: StoredCartItem[]) {
   write(CART_KEY, JSON.stringify(items));
+}
+
+export function saveOrder(order: StoredOrder) {
+  write(orderKey(order.id), JSON.stringify(order));
+}
+
+/** Raw JSON for an order, so callers can use it as a stable snapshot. */
+export function readOrderJson(id: string): string | null {
+  return read(orderKey(id));
 }
