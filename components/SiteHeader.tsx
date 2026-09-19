@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CartLink } from "@/components/CartLink";
 
 export function SiteHeader() {
   return (
@@ -11,6 +12,7 @@ export function SiteHeader() {
           <Link href="/" className="text-sm text-ink hover:text-accent">
             Shop
           </Link>
+          <CartLink />
         </nav>
       </div>
     </header>

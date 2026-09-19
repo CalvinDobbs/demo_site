@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { AddToCart } from "@/components/AddToCart";
 import { Price } from "@/components/Price";
 import { ProductCard } from "@/components/ProductCard";
 import { getProduct, getProductSlugs, getRelatedProducts } from "@/lib/catalog";
@@ -67,7 +68,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
           />
           <p className="mt-8 text-base leading-relaxed text-muted">{product.description}</p>
 
-          <div className="mt-10 border-t border-line pt-8">
+          <div className="mt-10">
+            <AddToCart slug={product.slug} name={product.name} />
+          </div>
+
+          <div className="mt-8 border-t border-line pt-8">
             <h2 className="text-xs font-medium uppercase tracking-[0.12em] text-ink">Details</h2>
             <ul className="mt-4 space-y-2 text-sm text-muted">
               {product.details.map((detail) => (
