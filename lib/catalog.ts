@@ -135,16 +135,24 @@ const products: Product[] = [
   },
 ];
 
+const bySlug = (a: Product, b: Product) => a.slug.localeCompare(b.slug);
+
+// Lookup index, built once at module load instead of scanning on every call.
+const productsBySlug = new Map(products.map((product) => [product.slug, product]));
+
+// Slugs in a fixed alphabetical order for static generation.
+const productSlugs = products.sort(bySlug).map((product) => product.slug);
+
 export function getProducts(): Product[] {
   return products;
 }
 
 export function getProduct(slug: string): Product | undefined {
-  return products.find((product) => product.slug === slug);
+  return productsBySlug.get(slug);
 }
 
 export function getProductSlugs(): string[] {
-  return products.map((product) => product.slug);
+  return productSlugs;
 }
 
 /** The next few products in shop order, wrapping around the end of the list. */
