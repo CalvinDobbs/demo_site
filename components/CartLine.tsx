@@ -2,17 +2,30 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { QuantitySelect } from "@/components/QuantitySelect";
+import { useState } from "react";
+import { MAX_QUANTITY } from "@/components/CartProvider";
 import { useCart, type CartLine as CartLineData } from "@/hooks/useCart";
-import { formatPrice } from "@/lib/money";
+import { formatPrice, lineTotal } from "@/lib/money";
+import { writeStoredCart } from "@/lib/storage";
 
 type CartLineProps = {
   line: CartLineData;
 };
 
 export function CartLine({ line }: CartLineProps) {
-  const { setQuantity, removeItem } = useCart();
+  const { items, removeItem } = useCart();
   const { product } = line;
+  const [quantity, setQuantity] = useState(line.quantity);
+
+  // Update the line straight away so the stepper feels instant, and save the
+  // new quantity so it's kept if the page is reloaded.
+  function step(delta: number) {
+    const next = Math.min(MAX_QUANTITY, Math.max(1, quantity + delta));
+    setQuantity(next);
+    writeStoredCart(
+      items.map((item) => (item.slug === line.slug ? { ...item, quantity: next } : item)),
+    );
+  }
 
   return (
     <li data-testid={`cart-line-${line.slug}`} className="flex gap-6 py-8">
@@ -38,15 +51,37 @@ export function CartLine({ line }: CartLineProps) {
           <p className="mt-1 text-sm text-muted">{formatPrice(product.price)} each</p>
         </div>
         <div className="flex items-start gap-8 sm:flex-col sm:items-end sm:gap-4">
-          <p className="font-serif text-lg text-ink">{formatPrice(line.lineTotal)}</p>
+          <p className="font-serif text-lg text-ink">
+            {formatPrice(lineTotal(product.price, quantity))}
+          </p>
           <div className="flex items-center gap-4">
-            <QuantitySelect
-              id={`quantity-${line.slug}`}
-              label={`Quantity for ${product.name}`}
-              hideLabel
-              value={line.quantity}
-              onChange={(quantity) => setQuantity(line.slug, quantity)}
-            />
+            <div className="flex h-11 items-center rounded-sm border border-line">
+              <button
+                type="button"
+                onClick={() => step(-1)}
+                disabled={quantity <= 1}
+                aria-label={`Decrease quantity of ${product.name}`}
+                className="h-full w-10 text-ink hover:bg-surface disabled:text-muted/50"
+              >
+                −
+              </button>
+              <span
+                aria-live="polite"
+                data-testid={`quantity-${line.slug}`}
+                className="w-8 text-center text-sm text-ink tabular-nums"
+              >
+                {quantity}
+              </span>
+              <button
+                type="button"
+                onClick={() => step(1)}
+                disabled={quantity >= MAX_QUANTITY}
+                aria-label={`Increase quantity of ${product.name}`}
+                className="h-full w-10 text-ink hover:bg-surface disabled:text-muted/50"
+              >
+                +
+              </button>
+            </div>
             <button
               type="button"
               onClick={() => removeItem(line.slug)}
