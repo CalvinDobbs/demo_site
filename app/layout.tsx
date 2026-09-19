@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Instrument_Sans, Newsreader } from "next/font/google";
+import { SiteFooter } from "@/components/SiteFooter";
+import { SiteHeader } from "@/components/SiteHeader";
 import "./globals.css";
 
 const instrumentSans = Instrument_Sans({
@@ -24,7 +26,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en" className={`${instrumentSans.variable} ${newsreader.variable} antialiased`}>
       <body className="flex min-h-screen flex-col overflow-x-hidden font-sans">
+        <SiteHeader />
         <main className="flex-1">{children}</main>
+        <SiteFooter />
       </body>
     </html>
   );
