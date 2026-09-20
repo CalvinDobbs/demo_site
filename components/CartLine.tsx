@@ -35,10 +35,10 @@ export function CartLine({ line }: CartLineProps) {
             </Link>
           </h2>
           <p className="mt-1 text-sm text-muted">{product.tagline}</p>
-          <p className="mt-1 text-sm text-muted">{formatPrice(product.price)} each</p>
+          <p className="mt-1 text-sm text-muted">{formatPrice(product.price, 0)} each</p>
         </div>
         <div className="flex items-start gap-8 sm:flex-col sm:items-end sm:gap-4">
-          <p className="font-serif text-lg text-ink">{formatPrice(line.lineTotal)}</p>
+          <p className="font-serif text-lg text-ink">{formatPrice(line.lineTotal, 0)}</p>
           <div className="flex items-center gap-4">
             <QuantitySelect
               id={`quantity-${line.slug}`}
