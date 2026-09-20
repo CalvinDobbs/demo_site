@@ -45,7 +45,7 @@ export default function CartPage() {
                 </span>
               </dt>
               <dd data-testid="cart-subtotal" className="font-serif text-2xl text-ink tabular-nums">
-                {formatPrice(subtotal)}
+                {formatPrice(subtotal, 0)}
               </dd>
             </dl>
             <p className="mt-3 text-sm text-muted">Shipping is calculated at checkout.</p>
